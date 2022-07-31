@@ -2,6 +2,7 @@
 import express from "express";
 import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
+import cors from "cors";
 
 // This will put the URL in a variable called process.env
 dotenv.config();
@@ -28,8 +29,9 @@ async function createConnection() {
 
 const client = await createConnection(); // Get the client as a global variable name
 
+app.use(cors); // 3rd party middleware
 // we need a middleware i.e. express to tell nodejs that the body is in JSON format
-app.use(express.json());
+app.use(express.json()); // Inbuilt middleware
 
 app.get("/", function (req, res) {
   res.send("Hello World 👍🏻 🌎");
