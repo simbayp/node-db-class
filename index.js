@@ -207,6 +207,27 @@ app.delete("/movies/:id", async function (req, res) {
     : res.status(404).send({ msg: "Movie not found!" });
 });
 
+app.put("/movies/:id", async function (req, res) {
+  const data = req.body;
+
+  // To update a particular movie from db in mongodb syntax
+  // db.movies.updateOne({id: "101"}, {$set: data});
+
+  const { id } = req.params;
+  console.log(req.params, id);
+
+  const result = await client
+    .db("b36wd")
+    .collection("movies")
+    .updateOne({ id: id }, { $set: data });
+
+  result.modifiedCount > 0
+    ? res.send({ msg: "Movie successfully modified" })
+    : res.status(400).send({ msg: "Movie not found!" });
+
+  // result ? res.send(result) : res.status(404).send({ msg: "Movie not found" });
+});
+
 app.listen(PORT, () => console.log(`App has started at port ${PORT}`));
 
 // package.json
