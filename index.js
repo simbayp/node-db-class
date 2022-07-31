@@ -3,6 +3,7 @@ import express from "express";
 import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
 import cors from "cors";
+import { moviesRouter } from "./routes/movies.js";
 
 // This will put the URL in a variable called process.env
 dotenv.config();
@@ -27,7 +28,7 @@ async function createConnection() {
   return client; // To use the client globally i.e. outside the createConnection function
 }
 
-const client = await createConnection(); // Get the client as a global variable name
+export const client = await createConnection(); // Get the client as a global variable name
 
 app.use(cors); // 3rd party middleware
 // we need a middleware i.e. express to tell nodejs that the body is in JSON format
@@ -36,6 +37,8 @@ app.use(express.json()); // Inbuilt middleware
 app.get("/", function (req, res) {
   res.send("Hello World 👍🏻 🌎");
 });
+
+app.use("/movies", moviesRouter);
 
 // we don't need this anymore since data is coming from database
 /*
@@ -122,113 +125,6 @@ const movies = [
 */
 
 // endpoint --> /movies
-
-app.get("/movies", async function (req, res) {
-  // To get all movies from db in mongodb syntax
-  // db.movies.find({});
-
-  // rating should be a number
-  if (req.query.rating) {
-    req.query.rating = +req.query.rating;
-  }
-  console.log(req.query);
-
-  // To get all movies from db in nodejs syntax
-  // find({}) doesn't return an object, it returns a cursor --> which is paginations
-  // const movies = await client.db("b36wd").collection("movies").find({});
-
-  // we add .toArray() to display all data without pagination, also Postman GET request shows data properly. Basically we are converting our cursor to an arrray
-  const movies = await client
-    .db("b36wd")
-    .collection("movies")
-    .find(req.query)
-    .toArray();
-
-  res.send(movies);
-});
-
-// we need to convert the body -> JSON
-// for this we need a middleware i.e. express to tell nodejs that the body is in JSON format
-app.post("/movies", async function (req, res) {
-  const data = req.body;
-
-  // To create all movies in db in mongodb syntax
-  // db.movies.insertMany({});
-
-  // To create all movies in db in nodejs syntax, the data is coming from mongodb database
-  const result = await client.db("b36wd").collection("movies").insertMany(data);
-
-  res.send(result);
-});
-
-// endpoint --> /movies/id
-
-app.get("/movies/:id", async function (req, res) {
-  // To get a particular movie from db in mongodb syntax
-  // db.movies.findOne({id: "101"});
-
-  const { id } = req.params;
-  console.log(req.params, id);
-
-  // 'find' will return the first matched element while 'filter' will return an array of all matched elements
-  // const movie = movies.find((element) => {
-  //   return element.id === id;
-  // });
-  // console.log(movie);
-
-  // To get a particular movie from db in nodejs syntax, the data is coming from mongodb database
-  const movie = await client
-    .db("b36wd")
-    .collection("movies")
-    .findOne({ id: id });
-
-  movie ? res.send(movie) : res.status(404).send({ msg: "Movie not found!" });
-});
-
-app.delete("/movies/:id", async function (req, res) {
-  // To delete a particular movie from db in mongodb syntax
-  // db.movies.deleteOne({id: "101"});
-
-  const { id } = req.params;
-  console.log(req.params, id);
-
-  // 'find' will return the first matched element while 'filter' will return an array of all matched elements
-  // const movie = movies.find((element) => {
-  //   return element.id === id;
-  // });
-  // console.log(movie);
-
-  // To delete a particular movie from db in nodejs syntax, the data is coming from mongodb database
-  const result = await client
-    .db("b36wd")
-    .collection("movies")
-    .deleteOne({ id: id });
-
-  result.deletedCount > 0
-    ? res.send({ msg: "Movie successfully deleted" })
-    : res.status(404).send({ msg: "Movie not found!" });
-});
-
-app.put("/movies/:id", async function (req, res) {
-  const data = req.body;
-
-  // To update a particular movie from db in mongodb syntax
-  // db.movies.updateOne({id: "101"}, {$set: data});
-
-  const { id } = req.params;
-  console.log(req.params, id);
-
-  const result = await client
-    .db("b36wd")
-    .collection("movies")
-    .updateOne({ id: id }, { $set: data });
-
-  result.modifiedCount > 0
-    ? res.send({ msg: "Movie successfully modified" })
-    : res.status(400).send({ msg: "Movie not found!" });
-
-  // result ? res.send(result) : res.status(404).send({ msg: "Movie not found" });
-});
 
 app.listen(PORT, () => console.log(`App has started at port ${PORT}`));
 
