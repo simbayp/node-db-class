@@ -2,6 +2,8 @@ import express from "express";
 import { client } from "../index.js";
 const router = express.Router();
 
+// endpoint --> /movies
+
 router.get("/", async function (req, res) {
   // To get all movies from db in mongodb syntax
   // db.movies.find({});

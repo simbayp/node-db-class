@@ -2,7 +2,7 @@
 import express from "express";
 import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
-import cors from "cors";
+// import cors from "cors";
 import { moviesRouter } from "./routes/movies.js";
 
 // This will put the URL in a variable called process.env
@@ -30,7 +30,7 @@ async function createConnection() {
 
 export const client = await createConnection(); // Get the client as a global variable name
 
-app.use(cors); // 3rd party middleware
+// app.use(cors); // 3rd party middleware
 // we need a middleware i.e. express to tell nodejs that the body is in JSON format
 app.use(express.json()); // Inbuilt middleware
 
@@ -123,8 +123,6 @@ const movies = [
   },
 ];
 */
-
-// endpoint --> /movies
 
 app.listen(PORT, () => console.log(`App has started at port ${PORT}`));
 
